@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+           
+
+	<context:annotation-config></context:annotation-config>
+
+	<bean id="daoProcessor" class="rose.dao.DaoPostProcessor" />
+
+	<bean id="daoProvider"
+		class="rose.dao.provider.spring.SpringJdbcTemplateDaoProvider" />
+
+	<bean id="explSQLInterpreter"
+		class="rose.dao.interpreter.ExplSQLInterpreter" />
+	<bean id="splitTableSQLInterpreter"
+		class="rose.dao.interpreter.SplitTableInterpreter" />
+	
+	<bean id="userService" class="demo.service.UserService"></bean>
+	
+ 	<!-- 配置数据源  -->
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<property name="url" value="jdbc:mysql://112.124.202.239:3306/rose?useUnicode=true&amp;characterEncoding=UTF8" />
+		<property name="username" value="rose" />
+		<property name="password" value="rose123" />
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="false"/>
+	
+	<!-- 配置事务管理器 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- 配置事务模板 -->
+	<bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="propagationBehaviorName" value="PROPAGATION_REQUIRED"/>
+    </bean>
+	
+	<!-- 配置数据访问模板类 -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+</beans>
